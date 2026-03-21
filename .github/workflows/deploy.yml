@@ -1,0 +1,198 @@
+name: Build and Deploy Angular App to AWS ECS
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+    inputs:
+      stack_name:
+        description: 'CloudFormation stack prefix (EnvironmentName used in ecommerce-infra)'
+        required: false
+        default: ''
+
+env:
+  AWS_REGION: ap-southeast-2
+
+permissions:
+  contents: read
+
+jobs:
+  # ── Job 1: Test ───────────────────────────────────────────────────────────────
+  test:
+    name: Run Angular Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install
+      - name: Run tests
+        run: npx ng test --watch=false --browsers=ChromeHeadlessNoSandbox
+        env:
+          CI: true
+
+  # ── Job 2: Build + Deploy ─────────────────────────────────────────────────────
+  deploy:
+    name: Build → Push → Deploy
+    runs-on: ubuntu-latest
+    needs: test
+    environment: production
+
+    steps:
+    - name: Checkout source
+      uses: actions/checkout@v4
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region:            ${{ env.AWS_REGION }}
+
+    - name: Resolve CloudFormation stack name
+      id: stack
+      run: |
+        STACK_NAME="${{ github.event.inputs.stack_name }}"
+        if [ -z "$STACK_NAME" ]; then
+          STACK_NAME="${{ vars.STACK_NAME }}"
+        fi
+        if [ -z "$STACK_NAME" ]; then
+          STACK_NAME="ecommerce-demo"
+        fi
+        echo "name=$STACK_NAME" >> "$GITHUB_OUTPUT"
+        echo "Using CloudFormation stack prefix: $STACK_NAME"
+
+    - name: Read infrastructure config from CloudFormation
+      id: infra
+      env:
+        STACK_NAME: ${{ steps.stack.outputs.name }}
+      run: |
+        COMPUTE_STACK="${STACK_NAME}-compute"
+
+        get_output() {
+          aws cloudformation describe-stacks \
+            --stack-name "$COMPUTE_STACK" \
+            --region     "${{ env.AWS_REGION }}" \
+            --query      "Stacks[0].Outputs[?OutputKey=='$1'].OutputValue" \
+            --output     text
+        }
+
+        ECR_URI=$(get_output         "AngularECRRepositoryUri")
+        ECS_CLUSTER=$(get_output     "ECSClusterName")
+        ECS_SERVICE=$(get_output     "AngularServiceName")
+        TASK_FAMILY=$(get_output     "AngularTaskDefFamily")
+        CONTAINER_NAME=$(get_output  "AngularContainerName")
+        BACKEND_ALB_DNS=$(get_output "BackendALBDNS")
+
+        for VAR in ECR_URI ECS_CLUSTER ECS_SERVICE TASK_FAMILY CONTAINER_NAME BACKEND_ALB_DNS; do
+          VALUE="${!VAR}"
+          if [ -z "$VALUE" ] || [ "$VALUE" = "None" ]; then
+            echo "ERROR: Could not read '$VAR' from stack '$COMPUTE_STACK'."
+            exit 1
+          fi
+        done
+
+        API_URL="http://${BACKEND_ALB_DNS}"
+
+        echo "ecr_uri=$ECR_URI"             >> "$GITHUB_OUTPUT"
+        echo "ecs_cluster=$ECS_CLUSTER"     >> "$GITHUB_OUTPUT"
+        echo "ecs_service=$ECS_SERVICE"     >> "$GITHUB_OUTPUT"
+        echo "task_family=$TASK_FAMILY"     >> "$GITHUB_OUTPUT"
+        echo "container_name=$CONTAINER_NAME" >> "$GITHUB_OUTPUT"
+        echo "api_url=$API_URL"             >> "$GITHUB_OUTPUT"
+
+        echo "──────────────────────────────────────────"
+        echo " Infra config resolved from CloudFormation"
+        echo "──────────────────────────────────────────"
+        echo "  ECR URI         : $ECR_URI"
+        echo "  ECS Cluster     : $ECS_CLUSTER"
+        echo "  ECS Service     : $ECS_SERVICE"
+        echo "  Task family     : $TASK_FAMILY"
+        echo "  Container       : $CONTAINER_NAME"
+        echo "  Backend ALB DNS : $BACKEND_ALB_DNS"
+        echo "  API_URL         : $API_URL"
+        echo "──────────────────────────────────────────"
+
+    - name: Login to Amazon ECR
+      uses: aws-actions/amazon-ecr-login@v2
+
+    - name: Build Docker image (with backend API URL baked in) and push to ECR
+      id: build-image
+      env:
+        ECR_URI:   ${{ steps.infra.outputs.ecr_uri }}
+        IMAGE_TAG: ${{ github.sha }}
+        API_URL:   ${{ steps.infra.outputs.api_url }}
+      run: |
+        IMAGE="${ECR_URI}:${IMAGE_TAG}"
+        echo "Building image: $IMAGE"
+        echo "API_URL baked in: $API_URL"
+
+        docker build \
+          --build-arg API_URL="$API_URL" \
+          -t "$IMAGE" \
+          .
+
+        docker push "$IMAGE"
+        echo "image=$IMAGE" >> "$GITHUB_OUTPUT"
+        echo "Image pushed: $IMAGE"
+
+    - name: Deploy new image to ECS
+      env:
+        IMAGE:          ${{ steps.build-image.outputs.image }}
+        ECS_CLUSTER:    ${{ steps.infra.outputs.ecs_cluster }}
+        ECS_SERVICE:    ${{ steps.infra.outputs.ecs_service }}
+        TASK_FAMILY:    ${{ steps.infra.outputs.task_family }}
+        CONTAINER_NAME: ${{ steps.infra.outputs.container_name }}
+        AWS_REGION:     ${{ env.AWS_REGION }}
+      run: |
+        echo "Step 1: Downloading current task definition from ECS..."
+        aws ecs describe-task-definition \
+          --task-definition "$TASK_FAMILY" \
+          --region          "$AWS_REGION" \
+          --query           taskDefinition \
+          | jq 'del(
+              .taskDefinitionArn,
+              .revision,
+              .status,
+              .requiresAttributes,
+              .compatibilities,
+              .registeredAt,
+              .registeredBy,
+              .deregisteredAt
+            )' > /tmp/task-def.json
+
+        echo "Step 2: Injecting new image into container definition..."
+        jq \
+          --arg img "$IMAGE" \
+          --arg ctr "$CONTAINER_NAME" \
+          '(.containerDefinitions[] | select(.name == $ctr) | .image) |= $img' \
+          /tmp/task-def.json > /tmp/task-def-new.json
+
+        echo "Step 3: Registering new task definition revision..."
+        NEW_ARN=$(aws ecs register-task-definition \
+          --region         "$AWS_REGION" \
+          --cli-input-json "$(cat /tmp/task-def-new.json)" \
+          --query          'taskDefinition.taskDefinitionArn' \
+          --output         text)
+        echo "  Registered: $NEW_ARN"
+
+        echo "Step 4: Updating ECS service..."
+        aws ecs update-service \
+          --cluster        "$ECS_CLUSTER" \
+          --service        "$ECS_SERVICE" \
+          --task-definition "$NEW_ARN" \
+          --desired-count  1 \
+          --region         "$AWS_REGION"
+
+        echo "Step 5: Waiting for service to stabilize..."
+        aws ecs wait services-stable \
+          --cluster  "$ECS_CLUSTER" \
+          --services "$ECS_SERVICE" \
+          --region   "$AWS_REGION"
+
+        echo "────────────────────────────────────────────"
+        echo "  Angular deployment complete!"
+        echo "  Image: $IMAGE"
+        echo "  Task:  $NEW_ARN"
+        echo "────────────────────────────────────────────"
