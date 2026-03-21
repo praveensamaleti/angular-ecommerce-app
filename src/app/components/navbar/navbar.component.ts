@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { AsyncPipe, NgIf } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { NgbDropdown, NgbDropdownMenu, NgbDropdownToggle, NgbDropdownItem } from '@ng-bootstrap/ng-bootstrap';
 import { selectUser, selectIsAdmin } from '../../store/auth/auth.selectors';
 import { selectItemCount } from '../../store/cart/cart.selectors';
 import { logoutRequest } from '../../store/auth/auth.actions';
@@ -11,7 +12,7 @@ import { CurrencySelectorComponent } from '../currency-selector/currency-selecto
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [AsyncPipe, NgIf, RouterLink, RouterLinkActive, ThemeToggleComponent, CurrencySelectorComponent],
+  imports: [AsyncPipe, NgIf, RouterLink, RouterLinkActive, NgbDropdown, NgbDropdownMenu, NgbDropdownToggle, NgbDropdownItem, ThemeToggleComponent, CurrencySelectorComponent],
   template: `
     <nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom sticky-top">
       <div class="container">
@@ -49,15 +50,15 @@ import { CurrencySelectorComponent } from '../currency-selector/currency-selecto
               </span>
             </a>
             <ng-container *ngIf="user$ | async as user; else guestLinks">
-              <div class="dropdown">
-                <button class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+              <div ngbDropdown>
+                <button class="btn btn-outline-secondary btn-sm" ngbDropdownToggle>
                   {{ user.name }}
                 </button>
-                <ul class="dropdown-menu dropdown-menu-end">
-                  <li><a class="dropdown-item" routerLink="/profile">Profile</a></li>
-                  <li><hr class="dropdown-divider" /></li>
-                  <li><button class="dropdown-item text-danger" (click)="logout()">Logout</button></li>
-                </ul>
+                <div ngbDropdownMenu class="dropdown-menu-end">
+                  <a ngbDropdownItem routerLink="/profile">Profile</a>
+                  <div class="dropdown-divider"></div>
+                  <button ngbDropdownItem class="text-danger" (click)="logout()">Logout</button>
+                </div>
               </div>
             </ng-container>
             <ng-template #guestLinks>

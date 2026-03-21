@@ -3,7 +3,7 @@ import { Store } from '@ngrx/store';
 import { AsyncPipe, NgIf, NgFor } from '@angular/common';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { combineLatest } from 'rxjs';
+import { combineLatest, take } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
@@ -176,7 +176,7 @@ export class ProductsComponent implements OnInit {
   }
 
   onPage(delta: number): void {
-    this.store.select(selectFilters).pipe(takeUntilDestroyed()).subscribe((f) => {
+    this.store.select(selectFilters).pipe(take(1)).subscribe((f) => {
       this.store.dispatch(setFiltersPage({ page: f.page + delta }));
       this.store.dispatch(loadProductsRequest());
     });

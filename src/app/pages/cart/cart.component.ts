@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, DestroyRef } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { AsyncPipe, NgIf, NgFor } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -76,6 +76,7 @@ import type { Product } from '../../models/domain';
 })
 export class CartComponent implements OnInit {
   private store = inject(Store);
+  private destroyRef = inject(DestroyRef);
 
   cartItems$ = this.store.select(selectCartItems);
   totals$ = this.store.select(selectCartTotals);
@@ -96,7 +97,7 @@ export class CartComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.store.select(selectFilteredProducts).pipe(takeUntilDestroyed()).subscribe((products) => {
+    this.store.select(selectFilteredProducts).pipe(takeUntilDestroyed(this.destroyRef)).subscribe((products) => {
       if (products.length === 0) {
         this.store.dispatch(loadProductsRequest());
       }

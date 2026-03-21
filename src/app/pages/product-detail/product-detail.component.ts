@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, DestroyRef } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { AsyncPipe, NgIf, NgFor } from '@angular/common';
@@ -96,6 +96,7 @@ import type { Product } from '../../models/domain';
 export class ProductDetailComponent implements OnInit {
   private store = inject(Store);
   private route = inject(ActivatedRoute);
+  private destroyRef = inject(DestroyRef);
 
   loading$ = this.store.select(selectProductsLoading);
   product$ = combineLatest([
@@ -120,7 +121,7 @@ export class ProductDetailComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.store.select(selectFilteredProducts).pipe(takeUntilDestroyed()).subscribe((products) => {
+    this.store.select(selectFilteredProducts).pipe(takeUntilDestroyed(this.destroyRef)).subscribe((products) => {
       if (products.length === 0) {
         this.store.dispatch(loadProductsRequest());
       }
