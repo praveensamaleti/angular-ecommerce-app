@@ -2,7 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { AsyncPipe, NgIf } from '@angular/common';
-import { combineLatest } from 'rxjs';
+import { combineLatest, take } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { selectCartItems, selectCartTotals } from '../../store/cart/cart.selectors';
 import { selectFilteredProducts } from '../../store/products/products.selectors';
@@ -173,7 +173,7 @@ export class CheckoutComponent implements OnInit {
       return;
     }
     const { shipping, payment } = this.form.value as any;
-    this.store.select(selectCartItems).pipe(takeUntilDestroyed()).subscribe((items) => {
+    this.store.select(selectCartItems).pipe(take(1)).subscribe((items) => {
       this.store.dispatch(
         placeOrderRequest({
           items: items.map((i) => ({ productId: i.productId, qty: i.qty })),
