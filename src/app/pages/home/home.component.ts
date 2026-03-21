@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, DestroyRef } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { AsyncPipe, NgIf, NgFor } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -6,7 +6,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { loadProductsRequest } from '../../store/products/products.actions';
+import { loadProductsRequest, resetFilters } from '../../store/products/products.actions';
 import { selectFilteredProducts, selectProductsLoading } from '../../store/products/products.selectors';
 import { selectCartItems } from '../../store/cart/cart.selectors';
 import { addToCart, recomputeTotals } from '../../store/cart/cart.actions';
@@ -51,6 +51,7 @@ import type { Product } from '../../models/domain';
 export class HomeComponent implements OnInit {
   private store = inject(Store);
   private modal = inject(NgbModal);
+  private destroyRef = inject(DestroyRef);
 
   loading$ = this.store.select(selectProductsLoading);
   products$ = this.store.select(selectFilteredProducts);
@@ -70,7 +71,10 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.store.select(selectFilteredProducts).pipe(takeUntilDestroyed()).subscribe((products) => {
+    // Reset filters so home page always loads all products unfiltered,
+    // ensuring featured$ has the full product set to filter from.
+    this.store.dispatch(resetFilters());
+    this.store.select(selectFilteredProducts).pipe(takeUntilDestroyed(this.destroyRef)).subscribe((products) => {
       if (products.length === 0) {
         this.store.dispatch(loadProductsRequest());
       }
