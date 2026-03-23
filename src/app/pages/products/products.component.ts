@@ -30,28 +30,48 @@ import type { CartItem, Product } from '../../models/domain';
   imports: [AsyncPipe, NgIf, NgFor, ReactiveFormsModule, ProductCardComponent, LoadingSpinnerComponent, EmptyStateComponent],
   template: `
     <div class="container py-4">
-      <h2 class="mb-4">Products</h2>
+      <!-- Page header -->
+      <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-4">
+        <h2 class="m-0 page-title">Products</h2>
+        <div class="d-flex align-items-center gap-2">
+          <span *ngIf="totalCount$ | async as total"
+            style="background: var(--ec-primary-light, #e0e7ff); color: var(--ec-primary, #6366f1); border-radius: 20px; padding: 4px 12px; font-size: 0.78rem; font-weight: 700;">
+            {{ total }} results
+          </span>
+          <button class="btn btn-outline-primary btn-sm" (click)="onReset()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="me-1"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>
+            Reset
+          </button>
+        </div>
+      </div>
 
-      <!-- Filters -->
-      <div class="row g-3 mb-4">
-        <div class="col-md-4">
-          <input type="text" class="form-control" placeholder="Search products..." [formControl]="searchControl" />
-        </div>
-        <div class="col-md-3">
-          <select class="form-select" [formControl]="categoryControl">
-            <option value="All">All Categories</option>
-            <option *ngFor="let cat of categories$ | async" [value]="cat">{{ cat }}</option>
-          </select>
-        </div>
-        <div class="col-md-3">
-          <select class="form-select" [formControl]="pageSizeControl">
-            <option value="8">8 per page</option>
-            <option value="16">16 per page</option>
-            <option value="32">32 per page</option>
-          </select>
-        </div>
-        <div class="col-md-2">
-          <button class="btn btn-outline-secondary w-100" (click)="onReset()">Reset</button>
+      <!-- Filters row -->
+      <div class="filter-bar mb-4">
+        <div class="row g-3 align-items-end">
+          <div class="col-md-5">
+            <span class="filter-label">Search</span>
+            <div class="input-group">
+              <span class="input-group-text" style="background: transparent;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              </span>
+              <input type="text" class="form-control" placeholder="Search products..." [formControl]="searchControl" style="border-left: none;" />
+            </div>
+          </div>
+          <div class="col-md-4">
+            <span class="filter-label">Category</span>
+            <select class="form-select" [formControl]="categoryControl">
+              <option value="All">All Categories</option>
+              <option *ngFor="let cat of categories$ | async" [value]="cat">{{ cat }}</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <span class="filter-label">Per page</span>
+            <select class="form-select" [formControl]="pageSizeControl">
+              <option value="8">8 / page</option>
+              <option value="16">16 / page</option>
+              <option value="32">32 / page</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -81,24 +101,22 @@ import type { CartItem, Product } from '../../models/domain';
         </div>
 
         <!-- Pagination -->
-        <div *ngIf="(totalCount$ | async) as total" class="d-flex justify-content-center gap-2 mt-4">
+        <div *ngIf="(totalCount$ | async) as total" class="d-flex justify-content-center align-items-center gap-2 mt-4">
           <button
             class="btn btn-outline-primary btn-sm"
+            style="border-radius: 8px;"
             [disabled]="(filters$ | async)?.page === 0"
             (click)="onPage(-1)"
-          >
-            Previous
-          </button>
-          <span class="align-self-center text-muted small">
+          >← Previous</button>
+          <span class="text-muted small px-2">
             Page {{ ((filters$ | async)?.page || 0) + 1 }}
           </span>
           <button
             class="btn btn-outline-primary btn-sm"
+            style="border-radius: 8px;"
             [disabled]="((filters$ | async)?.page || 0) * ((filters$ | async)?.pageSize || 8) + ((products$ | async)?.length || 0) >= total"
             (click)="onPage(1)"
-          >
-            Next
-          </button>
+          >Next →</button>
         </div>
       </ng-container>
     </div>

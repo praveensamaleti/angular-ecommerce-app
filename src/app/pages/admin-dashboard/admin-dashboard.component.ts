@@ -27,7 +27,7 @@ import type { Product, Order, OrderStatus } from '../../models/domain';
   imports: [ReactiveFormsModule, FormsModule, AsyncPipe, NgIf, NgFor, NgbNavModule, CurrencyFormatPipe],
   template: `
     <div class="container py-4">
-      <h2 class="mb-4">Admin Dashboard</h2>
+      <h2 class="mb-4 page-title">Admin Dashboard</h2>
       <ul ngbNav #nav="ngbNav" [(activeId)]="activeTab" class="nav-tabs mb-3">
         <!-- Products Tab -->
         <li [ngbNavItem]="1">
@@ -88,7 +88,7 @@ import type { Product, Order, OrderStatus } from '../../models/domain';
 
             <!-- Products Table -->
             <div class="table-responsive">
-              <table class="table table-hover">
+              <table class="table table-hover" style="--bs-table-hover-bg: rgba(99,102,241,0.04);">
                 <thead><tr><th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Actions</th></tr></thead>
                 <tbody>
                   <tr *ngFor="let product of pagedProducts">
@@ -129,7 +129,7 @@ import type { Product, Order, OrderStatus } from '../../models/domain';
           <button ngbNavLink>Orders</button>
           <ng-template ngbNavContent>
             <div class="table-responsive">
-              <table class="table table-hover">
+              <table class="table table-hover" style="--bs-table-hover-bg: rgba(99,102,241,0.04);">
                 <thead><tr><th>Order ID</th><th>User ID</th><th>Total</th><th>Status</th><th>Actions</th></tr></thead>
                 <tbody>
                   <tr *ngFor="let order of orders$ | async">

@@ -19,7 +19,7 @@ import type { CartItem, Product } from '../../models/domain';
   imports: [AsyncPipe, NgIf, NgFor, RouterLink, CartItemRowComponent, EmptyStateComponent, CurrencyFormatPipe],
   template: `
     <div class="container py-4">
-      <h2 class="mb-4">Your Cart</h2>
+      <h2 class="mb-4 page-title">Your Cart</h2>
       <app-empty-state
         *ngIf="(cartItems$ | async)?.length === 0"
         title="Your cart is empty"
@@ -32,55 +32,61 @@ import type { CartItem, Product } from '../../models/domain';
         <div
           *ngIf="hasOutOfStockItems"
           class="alert alert-warning mb-3"
+          style="border-radius: 12px; font-size: 0.9rem;"
           role="alert"
         >
-          ⚠️ Some items in your cart are out of stock or have insufficient inventory. Please update quantities before checkout.
+          Some items in your cart are out of stock or have insufficient inventory. Please update quantities before checkout.
         </div>
-        <div class="row">
+        <div class="row g-4">
           <div class="col-lg-8">
-            <ng-container *ngFor="let item of cartItems$ | async">
-              <ng-container *ngIf="getProduct(item.productId) as product">
-                <app-cart-item-row
-                  [product]="product"
-                  [qty]="item.qty"
-                  [outOfStock]="product.stock === 0"
-                  [availableStock]="product.stock"
-                  (qtyChange)="onQtyChange(item.productId, $event)"
-                  (remove)="onRemove(item.productId)"
-                ></app-cart-item-row>
+            <div class="cart-items-panel">
+              <ng-container *ngFor="let item of cartItems$ | async">
+                <ng-container *ngIf="getProduct(item.productId) as product">
+                  <app-cart-item-row
+                    [product]="product"
+                    [qty]="item.qty"
+                    [outOfStock]="product.stock === 0"
+                    [availableStock]="product.stock"
+                    (qtyChange)="onQtyChange(item.productId, $event)"
+                    (remove)="onRemove(item.productId)"
+                  ></app-cart-item-row>
+                </ng-container>
               </ng-container>
-            </ng-container>
+            </div>
           </div>
           <div class="col-lg-4">
-            <div class="card">
-              <div class="card-body">
-                <h5 class="card-title">Order Summary</h5>
+            <div class="card order-summary-card shadow-sm">
+              <div class="card-body p-4">
+                <h5 class="fw-bold mb-4" style="letter-spacing: -0.02em;">Order Summary</h5>
                 <div *ngIf="totals$ | async as totals">
-                  <div class="d-flex justify-content-between mb-2">
-                    <span>Subtotal</span>
-                    <span>{{ totals.subtotal | currencyFormat | async }}</span>
+                  <div class="d-flex justify-content-between py-2 border-bottom" style="border-color: var(--ec-card-border) !important;">
+                    <span class="text-muted" style="font-size: 0.9rem;">Subtotal</span>
+                    <span class="fw-semibold">{{ totals.subtotal | currencyFormat | async }}</span>
                   </div>
-                  <div class="d-flex justify-content-between mb-2 text-success">
-                    <span>Discount (10%)</span>
-                    <span>-{{ totals.discount | currencyFormat | async }}</span>
+                  <div class="d-flex justify-content-between py-2 border-bottom" style="border-color: var(--ec-card-border) !important; color: #10b981;">
+                    <span style="font-size: 0.9rem;">Discount (10%)</span>
+                    <span class="fw-semibold">-{{ totals.discount | currencyFormat | async }}</span>
                   </div>
-                  <div class="d-flex justify-content-between mb-2">
-                    <span>Tax (8%)</span>
-                    <span>{{ totals.tax | currencyFormat | async }}</span>
+                  <div class="d-flex justify-content-between py-2" style="border-color: var(--ec-card-border) !important;">
+                    <span class="text-muted" style="font-size: 0.9rem;">Tax (8%)</span>
+                    <span class="fw-semibold">{{ totals.tax | currencyFormat | async }}</span>
                   </div>
-                  <hr />
-                  <div class="d-flex justify-content-between fw-bold fs-5">
-                    <span>Total</span>
-                    <span>{{ totals.total | currencyFormat | async }}</span>
+                  <hr style="border-color: var(--ec-card-border); margin: 0.75rem 0;" />
+                  <div class="d-flex justify-content-between align-items-center mb-4">
+                    <span class="fw-bold" style="font-size: 1rem;">Total</span>
+                    <span class="fw-bold" style="font-size: 1.3rem; color: var(--ec-primary);">
+                      {{ totals.total | currencyFormat | async }}
+                    </span>
                   </div>
                 </div>
                 <a
                   [routerLink]="hasOutOfStockItems ? null : '/checkout'"
-                  class="btn btn-primary w-100 mt-3"
+                  class="btn btn-primary w-100 mb-2"
                   [class.disabled]="hasOutOfStockItems"
                   [attr.aria-disabled]="hasOutOfStockItems ? 'true' : null"
                   [attr.tabindex]="hasOutOfStockItems ? -1 : null"
                 >Proceed to Checkout</a>
+                <a routerLink="/products" class="btn btn-outline-primary w-100">Continue Shopping</a>
               </div>
             </div>
           </div>

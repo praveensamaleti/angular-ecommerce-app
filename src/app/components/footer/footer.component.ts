@@ -4,10 +4,22 @@ import { Component } from '@angular/core';
   selector: 'app-footer',
   standalone: true,
   template: `
-    <footer class="bg-body-tertiary border-top mt-auto py-4">
-      <div class="container text-center text-muted">
-        <p class="mb-1">&copy; {{ year }} E-Commerce Store. All rights reserved.</p>
-        <small>Built with Angular 18 + NgRx</small>
+    <footer class="footer-dark mt-auto">
+      <div class="container">
+        <div class="row gy-3 align-items-center">
+          <div class="col-md-6">
+            <div class="footer-brand">ShopNG</div>
+            <div style="font-size: 0.82rem; margin-top: 4px;">
+              Modern e-commerce, powered by Angular & NgRx.
+            </div>
+          </div>
+          <div class="col-md-6 text-md-end">
+            <div style="font-size: 0.82rem;">Built with Angular 18 · NgRx · Bootstrap 5</div>
+            <div style="font-size: 0.78rem; color: #475569; margin-top: 4px;">
+              &copy; {{ year }} ShopNG
+            </div>
+          </div>
+        </div>
       </div>
     </footer>
   `,
