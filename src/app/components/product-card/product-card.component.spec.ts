@@ -16,6 +16,7 @@ const mockProduct: Product = {
   description: 'A great product',
   specs: {},
   reviews: [],
+  variants: [],
 };
 
 describe('ProductCardComponent', () => {
