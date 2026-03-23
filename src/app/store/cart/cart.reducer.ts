@@ -6,6 +6,7 @@ import * as CartActions from './cart.actions';
 export interface CartState {
   items: CartItem[];
   totals: CartTotals;
+  serverSynced: boolean;
 }
 
 function clamp(n: number, min: number, max: number): number {
@@ -23,6 +24,7 @@ const initialTotals: CartTotals = {
 export const initialCartState: CartState = {
   items: [],
   totals: { ...initialTotals },
+  serverSynced: false,
 };
 
 export const cartReducer = createReducer(
@@ -55,6 +57,7 @@ export const cartReducer = createReducer(
   on(CartActions.clearCart, () => ({
     items: [],
     totals: { ...initialTotals },
+    serverSynced: false,
   })),
   on(CartActions.recomputeTotals, (state, { products }) => {
     const nextTotals = computeTotals(state.items, products);
@@ -66,5 +69,15 @@ export const cartReducer = createReducer(
       nextTotals.itemCount !== state.totals.itemCount;
     if (!hasChanged) return state;
     return { ...state, totals: nextTotals };
-  })
+  }),
+  on(CartActions.fetchCartSuccess, (state, { items }) => ({
+    ...state,
+    items,
+    serverSynced: true,
+  })),
+  on(CartActions.syncCartSuccess, (state, { items }) => ({
+    ...state,
+    items,
+    serverSynced: true,
+  }))
 );

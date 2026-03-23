@@ -11,7 +11,7 @@ import { loadProductsRequest } from '../../store/products/products.actions';
 import { CartItemRowComponent } from '../../components/cart-item-row/cart-item-row.component';
 import { EmptyStateComponent } from '../../components/empty-state/empty-state.component';
 import { CurrencyFormatPipe } from '../../pipes/currency-format.pipe';
-import type { Product } from '../../models/domain';
+import type { CartItem, Product } from '../../models/domain';
 
 @Component({
   selector: 'app-cart',
@@ -29,6 +29,13 @@ import type { Product } from '../../models/domain';
       ></app-empty-state>
 
       <div *ngIf="(cartItems$ | async)?.length as itemsLen">
+        <div
+          *ngIf="hasOutOfStockItems"
+          class="alert alert-warning mb-3"
+          role="alert"
+        >
+          ⚠️ Some items in your cart are out of stock or have insufficient inventory. Please update quantities before checkout.
+        </div>
         <div class="row">
           <div class="col-lg-8">
             <ng-container *ngFor="let item of cartItems$ | async">
@@ -36,6 +43,8 @@ import type { Product } from '../../models/domain';
                 <app-cart-item-row
                   [product]="product"
                   [qty]="item.qty"
+                  [outOfStock]="product.stock === 0"
+                  [availableStock]="product.stock"
                   (qtyChange)="onQtyChange(item.productId, $event)"
                   (remove)="onRemove(item.productId)"
                 ></app-cart-item-row>
@@ -65,7 +74,13 @@ import type { Product } from '../../models/domain';
                     <span>{{ totals.total | currencyFormat | async }}</span>
                   </div>
                 </div>
-                <a routerLink="/checkout" class="btn btn-primary w-100 mt-3">Proceed to Checkout</a>
+                <a
+                  [routerLink]="hasOutOfStockItems ? null : '/checkout'"
+                  class="btn btn-primary w-100 mt-3"
+                  [class.disabled]="hasOutOfStockItems"
+                  [attr.aria-disabled]="hasOutOfStockItems ? 'true' : null"
+                  [attr.tabindex]="hasOutOfStockItems ? -1 : null"
+                >Proceed to Checkout</a>
               </div>
             </div>
           </div>
@@ -81,6 +96,14 @@ export class CartComponent implements OnInit {
   cartItems$ = this.store.select(selectCartItems);
   totals$ = this.store.select(selectCartTotals);
   products: Product[] = [];
+  cartItems: CartItem[] = [];
+
+  get hasOutOfStockItems(): boolean {
+    return this.cartItems.some((item) => {
+      const product = this.getProduct(item.productId);
+      return product !== undefined && (product.stock === 0 || product.stock < item.qty);
+    });
+  }
 
   constructor() {
     combineLatest([
@@ -88,7 +111,8 @@ export class CartComponent implements OnInit {
       this.store.select(selectFilteredProducts),
     ])
       .pipe(takeUntilDestroyed())
-      .subscribe(([, products]) => {
+      .subscribe(([cartItems, products]) => {
+        this.cartItems = cartItems;
         this.products = products;
         if (products.length > 0) {
           this.store.dispatch(recomputeTotals({ products }));

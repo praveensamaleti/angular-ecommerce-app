@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CurrencyFormatPipe } from '../../pipes/currency-format.pipe';
 import type { Product } from '../../models/domain';
@@ -7,7 +7,7 @@ import type { Product } from '../../models/domain';
 @Component({
   selector: 'app-cart-item-row',
   standalone: true,
-  imports: [AsyncPipe, FormsModule, CurrencyFormatPipe],
+  imports: [AsyncPipe, NgIf, FormsModule, CurrencyFormatPipe],
   template: `
     <div class="d-flex align-items-center gap-3 py-3 border-bottom">
       <img
@@ -18,7 +18,11 @@ import type { Product } from '../../models/domain';
         style="object-fit: cover; border-radius: 8px;"
       />
       <div class="flex-grow-1">
-        <h6 class="mb-0">{{ product.name }}</h6>
+        <h6 class="mb-0">
+          {{ product.name }}
+          <span *ngIf="outOfStock" class="badge bg-danger ms-2">Out of stock</span>
+          <span *ngIf="!outOfStock && qty > availableStock" class="badge bg-warning text-dark ms-2">Only {{ availableStock }} available</span>
+        </h6>
         <small class="text-muted">{{ product.price | currencyFormat | async }} each</small>
       </div>
       <div class="d-flex align-items-center gap-2">
@@ -42,6 +46,8 @@ import type { Product } from '../../models/domain';
 export class CartItemRowComponent {
   @Input({ required: true }) product!: Product;
   @Input({ required: true }) qty!: number;
+  @Input() outOfStock: boolean = false;
+  @Input() availableStock: number = 0;
   @Output() qtyChange = new EventEmitter<number>();
   @Output() remove = new EventEmitter<void>();
 }

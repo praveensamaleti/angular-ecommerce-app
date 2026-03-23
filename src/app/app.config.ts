@@ -11,6 +11,7 @@ import { reducers, metaReducers } from './store/app.state';
 import { AuthEffects } from './store/auth/auth.effects';
 import { OrdersEffects } from './store/orders/orders.effects';
 import { ProductsEffects } from './store/products/products.effects';
+import { CartEffects } from './store/cart/cart.effects';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
@@ -18,7 +19,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideHttpClient(withInterceptors([authInterceptor])),
     provideStore(reducers, { metaReducers }),
-    provideEffects([AuthEffects, OrdersEffects, ProductsEffects]),
+    provideEffects([AuthEffects, OrdersEffects, ProductsEffects, CartEffects]),
     provideAnimations(),
     importProvidersFrom(
       NgbModule,

@@ -1,11 +1,15 @@
 import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { Store } from '@ngrx/store';
 import { Router } from '@angular/router';
 import { EMPTY, fromEvent } from 'rxjs';
-import { switchMap, map, catchError, tap, exhaustMap } from 'rxjs/operators';
+import { switchMap, map, catchError, tap, exhaustMap, withLatestFrom } from 'rxjs/operators';
 import { ApiService } from '../../services/api.service';
 import { StorageService } from '../../services/storage.service';
 import * as AuthActions from './auth.actions';
+import * as CartActions from '../cart/cart.actions';
+import { selectCartItems } from '../cart/cart.selectors';
+import { clearCart } from '../cart/cart.actions';
 import type { User } from '../../models/domain';
 
 @Injectable()
@@ -14,6 +18,7 @@ export class AuthEffects {
   private api = inject(ApiService);
   private storage = inject(StorageService);
   private router = inject(Router);
+  private store = inject(Store);
 
   login$ = createEffect(() =>
     this.actions$.pipe(
@@ -89,6 +94,26 @@ export class AuthEffects {
   authLogout$ = createEffect(() =>
     fromEvent<CustomEvent>(window, 'auth-logout').pipe(
       map(() => AuthActions.forceLogout())
+    )
+  );
+
+  syncCartAfterLogin$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AuthActions.loginSuccess, AuthActions.registerSuccess),
+      withLatestFrom(this.store.select(selectCartItems)),
+      switchMap(([, items]) => {
+        if (items.length > 0) {
+          return [CartActions.syncCartRequest({ items })];
+        }
+        return [CartActions.fetchCartRequest()];
+      })
+    )
+  );
+
+  clearCartOnLogout$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AuthActions.logoutSuccess, AuthActions.forceLogout),
+      map(() => clearCart())
     )
   );
 }
