@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { provideMockStore } from '@ngrx/store/testing';
 import { ProductCardComponent } from './product-card.component';
 import type { Product } from '../../models/domain';
 
@@ -24,6 +25,7 @@ describe('ProductCardComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ProductCardComponent, RouterTestingModule],
+      providers: [provideMockStore({ initialState: { currency: { currency: 'USD' } } })],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ProductCardComponent);
