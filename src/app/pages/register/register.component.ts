@@ -18,53 +18,53 @@ function passwordsMatch(control: AbstractControl): ValidationErrors | null {
   standalone: true,
   imports: [ReactiveFormsModule, AsyncPipe, RouterLink, NgIf],
   template: `
-    <div class="container py-5">
-      <div class="row justify-content-center">
-        <div class="col-md-5">
-          <div class="card shadow-sm">
-            <div class="card-body p-4">
-              <h3 class="card-title mb-4">Create Account</h3>
-              <div *ngIf="error$ | async as error" class="alert alert-danger">{{ error }}</div>
-              <form [formGroup]="form" (ngSubmit)="onSubmit()">
-                <div class="mb-3">
-                  <label class="form-label">Name</label>
-                  <input type="text" class="form-control" formControlName="name" />
-                  <div *ngIf="form.get('name')?.invalid && form.get('name')?.touched" class="text-danger small mt-1">
-                    Name is required.
-                  </div>
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">Email</label>
-                  <input type="email" class="form-control" formControlName="email" />
-                  <div *ngIf="form.get('email')?.invalid && form.get('email')?.touched" class="text-danger small mt-1">
-                    Valid email is required.
-                  </div>
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">Password</label>
-                  <input type="password" class="form-control" formControlName="password" />
-                  <div *ngIf="form.get('password')?.invalid && form.get('password')?.touched" class="text-danger small mt-1">
-                    Password must be at least 6 characters.
-                  </div>
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">Confirm Password</label>
-                  <input type="password" class="form-control" formControlName="confirmPassword" />
-                  <div *ngIf="form.errors?.['passwordsMismatch'] && form.get('confirmPassword')?.touched" class="text-danger small mt-1">
-                    Passwords do not match.
-                  </div>
-                </div>
-                <button type="submit" class="btn btn-primary w-100" [disabled]="loading$ | async">
-                  <span *ngIf="loading$ | async" class="spinner-border spinner-border-sm me-2"></span>
-                  Create Account
-                </button>
-              </form>
-              <p class="mt-3 text-center text-muted">
-                Already have an account? <a routerLink="/login">Sign in</a>
-              </p>
+    <div class="auth-wrap">
+      <div class="auth-card" style="max-width:520px">
+        <div class="auth-card__logo">Angular Store</div>
+        <h1 class="auth-card__title">Create an account</h1>
+        <p class="auth-card__subtitle">Join to track orders and checkout faster</p>
+
+        <div *ngIf="error$ | async as error" class="alert alert-danger py-2 small">{{ error }}</div>
+
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+          <div class="mb-3">
+            <label class="form-label fw-semibold small">Full name</label>
+            <input type="text" class="form-control" formControlName="name" placeholder="Your name" />
+            <div *ngIf="form.get('name')?.invalid && form.get('name')?.touched" class="text-danger small mt-1">
+              Name is required.
             </div>
           </div>
-        </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold small">Email address</label>
+            <input type="email" class="form-control" formControlName="email" placeholder="you@example.com" />
+            <div *ngIf="form.get('email')?.invalid && form.get('email')?.touched" class="text-danger small mt-1">
+              Valid email is required.
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold small">Password</label>
+            <input type="password" class="form-control" formControlName="password" placeholder="Min. 6 characters" />
+            <div *ngIf="form.get('password')?.invalid && form.get('password')?.touched" class="text-danger small mt-1">
+              Password must be at least 6 characters.
+            </div>
+          </div>
+          <div class="mb-4">
+            <label class="form-label fw-semibold small">Confirm password</label>
+            <input type="password" class="form-control" formControlName="confirmPassword" placeholder="Repeat password" />
+            <div *ngIf="form.errors?.['passwordsMismatch'] && form.get('confirmPassword')?.touched" class="text-danger small mt-1">
+              Passwords do not match.
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary w-100 btn-lg" [disabled]="loading$ | async">
+            <span *ngIf="loading$ | async" class="spinner-border spinner-border-sm me-2"></span>
+            Create account
+          </button>
+        </form>
+
+        <p class="text-center mt-4" style="font-size:0.875rem">
+          <span style="color:var(--ec-muted)">Already have an account?</span>
+          <a routerLink="/login" class="fw-semibold ms-1" style="color:var(--ec-primary)">Sign in</a>
+        </p>
       </div>
     </div>
   `,

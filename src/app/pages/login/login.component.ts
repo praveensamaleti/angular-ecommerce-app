@@ -13,39 +13,46 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   standalone: true,
   imports: [ReactiveFormsModule, AsyncPipe, RouterLink, NgIf],
   template: `
-    <div class="container py-5">
-      <div class="row justify-content-center">
-        <div class="col-md-5">
-          <div class="card shadow-sm">
-            <div class="card-body p-4">
-              <h3 class="card-title mb-4">Sign In</h3>
-              <div *ngIf="error$ | async as error" class="alert alert-danger">{{ error }}</div>
-              <form [formGroup]="form" (ngSubmit)="onSubmit()">
-                <div class="mb-3">
-                  <label class="form-label">Email</label>
-                  <input type="email" class="form-control" formControlName="email" placeholder="you@example.com" />
-                  <div *ngIf="form.get('email')?.invalid && form.get('email')?.touched" class="text-danger small mt-1">
-                    Valid email is required.
-                  </div>
-                </div>
-                <div class="mb-3">
-                  <label class="form-label">Password</label>
-                  <input type="password" class="form-control" formControlName="password" placeholder="Password" />
-                  <div *ngIf="form.get('password')?.invalid && form.get('password')?.touched" class="text-danger small mt-1">
-                    Password is required.
-                  </div>
-                </div>
-                <button type="submit" class="btn btn-primary w-100" [disabled]="loading$ | async">
-                  <span *ngIf="loading$ | async" class="spinner-border spinner-border-sm me-2"></span>
-                  Sign In
-                </button>
-              </form>
-              <p class="mt-3 text-center text-muted">
-                Don't have an account? <a routerLink="/register">Register</a>
-              </p>
+    <div class="auth-wrap">
+      <div class="auth-card">
+        <div class="auth-card__logo">Angular Store</div>
+        <h1 class="auth-card__title">Welcome back</h1>
+        <p class="auth-card__subtitle">Sign in to your account to continue shopping</p>
+
+        <div class="rounded-3 mb-4 px-3 py-2"
+             style="background:rgba(37,99,235,0.07);border:1px solid rgba(37,99,235,0.15);font-size:0.8rem;color:var(--ec-muted)">
+          Demo: <strong>user@example.com</strong> / <strong>Password123!</strong>
+          &nbsp;&nbsp;or&nbsp;&nbsp;
+          <strong>admin@example.com</strong> / <strong>Admin123!</strong>
+        </div>
+
+        <div *ngIf="error$ | async as error" class="alert alert-danger py-2 small">{{ error }}</div>
+
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+          <div class="mb-3">
+            <label class="form-label fw-semibold small">Email address</label>
+            <input type="email" class="form-control" formControlName="email" placeholder="you@example.com" />
+            <div *ngIf="form.get('email')?.invalid && form.get('email')?.touched" class="text-danger small mt-1">
+              Valid email is required.
             </div>
           </div>
-        </div>
+          <div class="mb-4">
+            <label class="form-label fw-semibold small">Password</label>
+            <input type="password" class="form-control" formControlName="password" placeholder="••••••••" />
+            <div *ngIf="form.get('password')?.invalid && form.get('password')?.touched" class="text-danger small mt-1">
+              Password is required.
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary w-100 btn-lg" [disabled]="loading$ | async">
+            <span *ngIf="loading$ | async" class="spinner-border spinner-border-sm me-2"></span>
+            Sign in
+          </button>
+        </form>
+
+        <p class="text-center mt-4" style="font-size:0.875rem">
+          <span style="color:var(--ec-muted)">Don't have an account?</span>
+          <a routerLink="/register" class="fw-semibold ms-1" style="color:var(--ec-primary)">Create one</a>
+        </p>
       </div>
     </div>
   `,

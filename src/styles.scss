@@ -1,13 +1,13 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap');
 
 // ── Bootstrap variable overrides (must precede @import) ────────────────────
 
-$primary:                #6366f1;
+$primary:                #2563eb;
 $secondary:              #64748b;
 $success:                #10b981;
 $warning:                #f59e0b;
 $danger:                 #ef4444;
-$info:                   #06b6d4;
+$info:                   #0ea5e9;
 
 $font-family-sans-serif: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 $font-size-base:         0.9375rem;
@@ -19,7 +19,7 @@ $border-radius-xl:       1.25rem;
 $border-radius-pill:     50rem;
 
 $card-border-radius:     1rem;
-$card-border-color:      rgba(0, 0, 0, 0.06);
+$card-border-color:      rgba(0, 0, 0, 0.07);
 $card-cap-bg:            transparent;
 
 $input-border-radius:    0.625rem;
@@ -27,12 +27,12 @@ $btn-border-radius:      0.625rem;
 $btn-font-weight:        600;
 $btn-transition:         all 0.2s ease;
 
-$body-bg:                #f8fafc;
+$body-bg:                #f1f5f9;
 $body-color:             #0f172a;
 
 $table-cell-padding-y:   0.875rem;
 $table-cell-padding-x:   0.875rem;
-$table-hover-bg:         rgba(99, 102, 241, 0.04);
+$table-hover-bg:         rgba(37, 99, 235, 0.04);
 
 $link-decoration:        none;
 $box-shadow-sm:          0 1px 3px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.05);
@@ -45,28 +45,34 @@ $box-shadow:             0 1px 4px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0,
 
 :root {
   --ec-primary:        #{$primary};
-  --ec-primary-rgb:    99, 102, 241;
-  --ec-primary-dark:   #4f46e5;
-  --ec-primary-light:  #e0e7ff;
-  --ec-navbar-bg:      rgba(255, 255, 255, 0.88);
-  --ec-navbar-border:  rgba(99, 102, 241, 0.1);
-  --ec-card-border:    rgba(0, 0, 0, 0.06);
-  --ec-hover-shadow:   0 20px 40px rgba(99, 102, 241, 0.15);
+  --ec-primary-rgb:    37, 99, 235;
+  --ec-primary-dark:   #1d4ed8;
+  --ec-primary-light:  #dbeafe;
+  --ec-accent:         #0ea5e9;
+  --ec-accent-rgb:     14, 165, 233;
+  --ec-navbar-bg:      rgba(255, 255, 255, 0.92);
+  --ec-navbar-border:  rgba(37, 99, 235, 0.09);
+  --ec-card-border:    rgba(0, 0, 0, 0.07);
+  --ec-hover-shadow:   0 20px 48px rgba(37, 99, 235, 0.14);
   --ec-muted:          #64748b;
-  --ec-hero-gradient:  linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #06b6d4 100%);
+  --ec-hero-gradient:  linear-gradient(135deg, #0a0e1a 0%, #0f1f4a 50%, #1d4ed8 100%);
+  --ec-surface:        #f8fafc;
 }
 
 [data-bs-theme='dark'] {
-  --ec-primary:        #818cf8;
-  --ec-primary-rgb:    129, 140, 248;
-  --ec-primary-dark:   #6366f1;
-  --ec-primary-light:  #1e1b4b;
-  --ec-navbar-bg:      rgba(15, 23, 42, 0.92);
-  --ec-navbar-border:  rgba(129, 140, 248, 0.15);
-  --ec-card-border:    rgba(255, 255, 255, 0.07);
-  --ec-hover-shadow:   0 20px 40px rgba(129, 140, 248, 0.2);
+  --ec-primary:        #60a5fa;
+  --ec-primary-rgb:    96, 165, 250;
+  --ec-primary-dark:   #3b82f6;
+  --ec-primary-light:  #172554;
+  --ec-accent:         #38bdf8;
+  --ec-accent-rgb:     56, 189, 248;
+  --ec-navbar-bg:      rgba(9, 9, 11, 0.94);
+  --ec-navbar-border:  rgba(96, 165, 250, 0.1);
+  --ec-card-border:    rgba(255, 255, 255, 0.06);
+  --ec-hover-shadow:   0 20px 48px rgba(59, 130, 246, 0.18);
   --ec-muted:          #94a3b8;
-  --ec-hero-gradient:  linear-gradient(135deg, #312e81 0%, #4c1d95 50%, #164e63 100%);
+  --ec-hero-gradient:  linear-gradient(135deg, #020409 0%, #060c1f 55%, #0f2460 100%);
+  --ec-surface:        #0f0f14;
 }
 
 // ── Base ─────────────────────────────────────────────────────────────────────
@@ -87,7 +93,7 @@ body {
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--ec-navbar-border) !important;
-  box-shadow: 0 1px 24px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 24px rgba(0, 0, 0, 0.06);
   transition: background 0.3s ease;
 }
 
@@ -95,7 +101,7 @@ body {
   font-weight: 800;
   letter-spacing: -0.03em;
   font-size: 1.15rem;
-  background: linear-gradient(135deg, $primary, #8b5cf6);
+  background: linear-gradient(135deg, $primary, #0ea5e9);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -118,7 +124,6 @@ body {
     box-shadow: var(--ec-hover-shadow) !important;
   }
 
-  // Image zoom inside card on hover
   &:hover .card-img-top {
     transform: scale(1.07);
   }
@@ -128,7 +133,7 @@ body {
   transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-// ── Product image wrap (enables zoom + badge overlay) ─────────────────────
+// ── Product image wrap ─────────────────────────────────────────────────────
 
 .product-img-wrap {
   overflow: hidden;
@@ -151,7 +156,7 @@ body {
   position: absolute;
   bottom: 10px;
   left: 10px;
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.9), rgba(139, 92, 246, 0.9));
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.9), rgba(14, 165, 233, 0.9));
   color: white;
   font-size: 0.67rem;
   font-weight: 600;
@@ -166,20 +171,20 @@ body {
 // ── Buttons ──────────────────────────────────────────────────────────────────
 
 .btn-primary {
-  background: linear-gradient(135deg, $primary, #8b5cf6) !important;
+  background: linear-gradient(135deg, $primary, #0ea5e9) !important;
   border: none !important;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3) !important;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3) !important;
 
   &:hover {
-    background: linear-gradient(135deg, darken($primary, 6%), #7c3aed) !important;
+    background: linear-gradient(135deg, #1d4ed8, $primary) !important;
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.45) !important;
+    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.4) !important;
     color: white;
   }
 
   &:active {
     transform: translateY(0);
-    box-shadow: 0 2px 6px rgba(99, 102, 241, 0.3) !important;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3) !important;
   }
 }
 
@@ -188,8 +193,8 @@ body {
   color: $primary !important;
 
   &:hover {
-    background: rgba(99, 102, 241, 0.08) !important;
-    color: darken($primary, 6%) !important;
+    background: rgba(37, 99, 235, 0.08) !important;
+    color: #1d4ed8 !important;
   }
 }
 
@@ -198,7 +203,7 @@ body {
 .form-control:focus,
 .form-select:focus {
   border-color: $primary !important;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15) !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12) !important;
 }
 
 // ── Tables ───────────────────────────────────────────────────────────────────
@@ -237,18 +242,93 @@ body {
 .hero-section {
   background: var(--ec-hero-gradient);
   color: white;
-  padding: 5rem 1rem;
+  padding: 6rem 1rem;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 65% 50%, rgba(37, 99, 235, 0.22) 0%, transparent 65%);
+    pointer-events: none;
+  }
 
   h1 {
-    font-weight: 800;
+    font-weight: 900;
     letter-spacing: -0.04em;
-    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-size: clamp(2.25rem, 5.5vw, 4rem);
+    position: relative;
   }
 
   p {
-    font-size: 1.1rem;
-    opacity: 0.92;
+    font-size: 1.15rem;
+    opacity: 0.85;
+    position: relative;
   }
+}
+
+// ── Auth pages ────────────────────────────────────────────────────────────────
+
+.auth-wrap {
+  min-height: calc(100vh - 10rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 480px;
+  border-radius: 20px;
+  border: 1px solid var(--ec-card-border);
+  background: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.04), 0 16px 48px rgba(0, 0, 0, 0.1);
+  padding: 2.5rem;
+}
+
+.auth-card__logo {
+  font-weight: 900;
+  font-size: 1.1rem;
+  letter-spacing: -0.04em;
+  background: linear-gradient(135deg, $primary, #0ea5e9);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 1.5rem;
+  display: inline-block;
+}
+
+.auth-card__title {
+  font-weight: 800;
+  font-size: 1.6rem;
+  letter-spacing: -0.03em;
+  margin-bottom: 0.35rem;
+}
+
+.auth-card__subtitle {
+  color: $secondary;
+  font-size: 0.875rem;
+  margin-bottom: 1.75rem;
+}
+
+// ── Form sections ─────────────────────────────────────────────────────────────
+
+.form-section {
+  border-top: 1px solid var(--ec-card-border);
+  padding-top: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.form-section__label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: $secondary;
+  margin-bottom: 1rem;
+  display: block;
 }
 
 // ── Cart ─────────────────────────────────────────────────────────────────────
@@ -276,6 +356,48 @@ body {
   border: 1px solid var(--ec-card-border) !important;
 }
 
+// ── Order success page ────────────────────────────────────────────────────────
+
+.success-wrap {
+  min-height: calc(100vh - 14rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+.success-card {
+  width: 100%;
+  max-width: 520px;
+  border-radius: 20px;
+  border: 1px solid var(--ec-card-border);
+  background: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.04), 0 16px 48px rgba(0, 0, 0, 0.1);
+  padding: 3rem 2.5rem;
+  text-align: center;
+}
+
+.success-icon-ring {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #10b981, #059669);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.75rem;
+  box-shadow: 0 8px 32px rgba(16, 185, 129, 0.3);
+  font-size: 2.25rem;
+  line-height: 1;
+}
+
+.success-card__title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-bottom: 0.5rem;
+}
+
 // ── Pagination ───────────────────────────────────────────────────────────────
 
 .page-link {
@@ -286,17 +408,17 @@ body {
   transition: all 0.15s ease;
 
   &:hover {
-    background: rgba(99, 102, 241, 0.08) !important;
-    color: darken($primary, 6%) !important;
+    background: rgba(37, 99, 235, 0.08) !important;
+    color: #1d4ed8 !important;
   }
 
   &:focus {
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15) !important;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12) !important;
   }
 }
 
 .page-item.active .page-link {
-  background: linear-gradient(135deg, $primary, #8b5cf6) !important;
+  background: linear-gradient(135deg, $primary, #0ea5e9) !important;
   border-color: $primary !important;
   color: white !important;
 }
@@ -311,9 +433,9 @@ body {
 // ── Footer ───────────────────────────────────────────────────────────────────
 
 .footer-dark {
-  background: #0f172a;
-  color: #94a3b8;
-  padding: 2.5rem 0;
+  background: #0a0e1a;
+  color: #64748b;
+  padding: 3rem 0;
 
   .footer-brand {
     font-weight: 700;
@@ -322,11 +444,11 @@ body {
   }
 
   a {
-    color: #a5b4fc;
+    color: #93c5fd;
     transition: opacity 0.2s;
 
     &:hover {
-      opacity: 0.8;
+      opacity: 0.75;
     }
   }
 }
@@ -335,28 +457,34 @@ body {
 
 [data-bs-theme='dark'] {
   .card {
-    background: #1e293b;
-    border-color: rgba(255, 255, 255, 0.07) !important;
+    background: #111118;
+    border-color: rgba(255, 255, 255, 0.06) !important;
   }
 
   .filter-bar,
   .cart-items-panel {
-    background: #1e293b;
-    border-color: rgba(255, 255, 255, 0.07);
+    background: #111118;
+    border-color: rgba(255, 255, 255, 0.06);
   }
 
   .order-summary-card {
-    background: #1e293b !important;
-    border-color: rgba(255, 255, 255, 0.07) !important;
+    background: #111118 !important;
+    border-color: rgba(255, 255, 255, 0.06) !important;
+  }
+
+  .auth-card,
+  .success-card {
+    background: #111118 !important;
+    border-color: rgba(255, 255, 255, 0.06) !important;
   }
 
   .navbar {
-    background-color: rgba(15, 23, 42, 0.92) !important;
-    border-bottom-color: rgba(129, 140, 248, 0.15) !important;
+    background-color: rgba(9, 9, 11, 0.94) !important;
+    border-bottom-color: rgba(96, 165, 250, 0.1) !important;
   }
 
   .navbar-brand {
-    background: linear-gradient(135deg, #818cf8, #a78bfa);
+    background: linear-gradient(135deg, #60a5fa, #38bdf8);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -367,6 +495,13 @@ body {
   }
 
   .product-category-tag {
-    background: linear-gradient(135deg, rgba(79, 70, 229, 0.9), rgba(109, 40, 217, 0.9));
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.9), rgba(14, 165, 233, 0.85));
+  }
+
+  .auth-card__logo {
+    background: linear-gradient(135deg, #60a5fa, #38bdf8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 }
