@@ -19,13 +19,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
         <h1 class="auth-card__title">Welcome back</h1>
         <p class="auth-card__subtitle">Sign in to your account to continue shopping</p>
 
-        <div class="rounded-3 mb-4 px-3 py-2"
-             style="background:rgba(37,99,235,0.07);border:1px solid rgba(37,99,235,0.15);font-size:0.8rem;color:var(--ec-muted)">
-          Demo: <strong>user&#64;example.com</strong> / <strong>Password123!</strong>
-          &nbsp;&nbsp;or&nbsp;&nbsp;
-          <strong>admin&#64;example.com</strong> / <strong>Admin123!</strong>
-        </div>
-
         <div *ngIf="error$ | async as error" class="alert alert-danger py-2 small">{{ error }}</div>
 
         <form [formGroup]="form" (ngSubmit)="onSubmit()">
