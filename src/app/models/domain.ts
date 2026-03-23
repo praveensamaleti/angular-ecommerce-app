@@ -1,5 +1,21 @@
 export type Category = string;
 
+/**
+ * A purchasable variant of a product (e.g. Red / Size M).
+ * Each variant has its own stock and an optional price override.
+ */
+export type ProductVariant = {
+  id: string;
+  sku?: string;
+  stock: number;
+  /** When undefined/null the parent product price is used. */
+  price?: number;
+  /** Flexible key-value map: { color: "Red", size: "M" } */
+  attributes: Record<string, string>;
+  /** Server-computed display label, e.g. "Red / M" */
+  label?: string;
+};
+
 export type Review = {
   id: string;
   userName: string;
@@ -21,12 +37,16 @@ export type Product = {
   description: string;
   specs: Record<string, string>;
   reviews: Review[];
+  /** Empty array = product has no variants; use product-level stock/price. */
+  variants: ProductVariant[];
   featured?: boolean;
 };
 
 export type CartItem = {
   productId: string;
   qty: number;
+  /** Undefined when the product has no variants. */
+  variantId?: string;
 };
 
 export type UserRole = 'user' | 'admin';
@@ -62,13 +82,15 @@ export type Payment = {
   cvc: string;
 };
 
-export type OrderStatus = 'pending' | 'shipped';
+export type OrderStatus = 'pending' | 'shipped' | 'delivered' | 'cancelled';
 
 export type OrderItem = {
   productId: string;
   name: string;
   price: number;
   qty: number;
+  variantId?: string;
+  variantLabel?: string;
 };
 
 export type Order = {

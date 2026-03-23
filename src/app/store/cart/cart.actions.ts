@@ -3,17 +3,17 @@ import type { Product, CartItem } from '../../models/domain';
 
 export const addToCart = createAction(
   '[Cart] Add To Cart',
-  props<{ productId: string; qty?: number }>()
+  props<{ productId: string; qty?: number; variantId?: string }>()
 );
 
 export const removeFromCart = createAction(
   '[Cart] Remove From Cart',
-  props<{ productId: string }>()
+  props<{ productId: string; variantId?: string }>()
 );
 
 export const setQty = createAction(
   '[Cart] Set Qty',
-  props<{ productId: string; qty: number }>()
+  props<{ productId: string; qty: number; variantId?: string }>()
 );
 
 export const clearCart = createAction('[Cart] Clear Cart');
