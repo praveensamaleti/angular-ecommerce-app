@@ -12,7 +12,7 @@ import { NgIf } from '@angular/common';
         <div class="success-icon-ring" aria-hidden="true">✓</div>
 
         <h1 class="success-card__title">Order confirmed!</h1>
-        <p style="color:var(--ec-muted);margin-bottom:{{ orderId ? '0.35rem' : '2rem' }}">
+        <p style="color:var(--ec-muted)" [style.margin-bottom]="orderId ? '0.35rem' : '2rem'">
           Your purchase was placed successfully.
         </p>
         <p *ngIf="orderId"
