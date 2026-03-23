@@ -17,6 +17,7 @@ export interface ProductsState {
   isLoading: boolean;
   error: string | null;
   filters: ProductsFilters;
+  categories: string[];
 }
 
 export const initialProductsState: ProductsState = {
@@ -25,6 +26,7 @@ export const initialProductsState: ProductsState = {
   isLoading: false,
   error: null,
   filters: { ...DEFAULT_FILTERS },
+  categories: [],
 };
 
 export const productsReducer = createReducer(
@@ -81,5 +83,9 @@ export const productsReducer = createReducer(
     ...state,
     isLoading: false,
     products: state.products.filter((p) => p.id !== id),
+  })),
+  on(ProductsActions.loadCategoriesSuccess, (state, { categories }) => ({
+    ...state,
+    categories,
   }))
 );

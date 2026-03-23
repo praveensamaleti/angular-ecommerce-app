@@ -1,4 +1,4 @@
-export type Category = 'Electronics' | 'Clothing';
+export type Category = string;
 
 export type Review = {
   id: string;

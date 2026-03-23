@@ -8,20 +8,21 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   loadProductsRequest,
+  loadCategoriesRequest,
   setFiltersQuery,
   setFiltersCategory,
   setFiltersPriceRange,
   setFiltersPage,
   resetFilters,
 } from '../../store/products/products.actions';
-import { selectFilteredProducts, selectProductsLoading, selectFilters, selectProductsTotalCount } from '../../store/products/products.selectors';
+import { selectFilteredProducts, selectProductsLoading, selectFilters, selectProductsTotalCount, selectCategories } from '../../store/products/products.selectors';
 import { selectCartItems } from '../../store/cart/cart.selectors';
-import { addToCart, recomputeTotals } from '../../store/cart/cart.actions';
+import { addToCart, removeFromCart, setQty, recomputeTotals } from '../../store/cart/cart.actions';
 import { ProductCardComponent } from '../../components/product-card/product-card.component';
 import { LoadingSpinnerComponent } from '../../components/loading-spinner/loading-spinner.component';
 import { EmptyStateComponent } from '../../components/empty-state/empty-state.component';
 import { QuickViewModalComponent } from '../../components/quick-view-modal/quick-view-modal.component';
-import type { Category, Product } from '../../models/domain';
+import type { CartItem, Product } from '../../models/domain';
 
 @Component({
   selector: 'app-products',
@@ -39,8 +40,7 @@ import type { Category, Product } from '../../models/domain';
         <div class="col-md-3">
           <select class="form-select" [formControl]="categoryControl">
             <option value="All">All Categories</option>
-            <option value="Electronics">Electronics</option>
-            <option value="Clothing">Clothing</option>
+            <option *ngFor="let cat of categories$ | async" [value]="cat">{{ cat }}</option>
           </select>
         </div>
         <div class="col-md-3">
@@ -71,7 +71,10 @@ import type { Category, Product } from '../../models/domain';
           <div *ngFor="let product of products$ | async" class="col">
             <app-product-card
               [product]="product"
+              [cartQty]="getCartQty(product.id)"
               (addToCart)="onAddToCart($event)"
+              (removeFromCart)="onRemoveFromCart($event)"
+              (qtyChange)="onQtyChange($event)"
               (quickView)="onQuickView($event)"
             ></app-product-card>
           </div>
@@ -109,10 +112,13 @@ export class ProductsComponent implements OnInit {
   products$ = this.store.select(selectFilteredProducts);
   totalCount$ = this.store.select(selectProductsTotalCount);
   filters$ = this.store.select(selectFilters);
+  categories$ = this.store.select(selectCategories);
 
   searchControl = new FormControl('');
   categoryControl = new FormControl('All');
   pageSizeControl = new FormControl('8');
+
+  private cartItems: CartItem[] = [];
 
   constructor() {
     combineLatest([
@@ -120,7 +126,8 @@ export class ProductsComponent implements OnInit {
       this.store.select(selectFilteredProducts),
     ])
       .pipe(takeUntilDestroyed())
-      .subscribe(([, products]) => {
+      .subscribe(([cartItems, products]) => {
+        this.cartItems = cartItems;
         if (products.length > 0) {
           this.store.dispatch(recomputeTotals({ products }));
         }
@@ -136,7 +143,7 @@ export class ProductsComponent implements OnInit {
     this.categoryControl.valueChanges
       .pipe(takeUntilDestroyed())
       .subscribe((category) => {
-        this.store.dispatch(setFiltersCategory({ category: (category as Category | 'All') || 'All' }));
+        this.store.dispatch(setFiltersCategory({ category: category || 'All' }));
         this.store.dispatch(loadProductsRequest());
       });
 
@@ -150,10 +157,27 @@ export class ProductsComponent implements OnInit {
 
   ngOnInit(): void {
     this.store.dispatch(loadProductsRequest());
+    this.store.select(selectCategories).pipe(take(1)).subscribe((cats) => {
+      if (cats.length === 0) {
+        this.store.dispatch(loadCategoriesRequest());
+      }
+    });
+  }
+
+  getCartQty(productId: string): number {
+    return this.cartItems.find((i) => i.productId === productId)?.qty ?? 0;
   }
 
   onAddToCart(product: Product): void {
     this.store.dispatch(addToCart({ productId: product.id }));
+  }
+
+  onRemoveFromCart(product: Product): void {
+    this.store.dispatch(removeFromCart({ productId: product.id }));
+  }
+
+  onQtyChange({ product, qty }: { product: Product; qty: number }): void {
+    this.store.dispatch(setQty({ productId: product.id, qty }));
   }
 
   onQuickView(product: Product): void {

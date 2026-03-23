@@ -69,3 +69,15 @@ export const deleteProductFailure = createAction(
   '[Products] Delete Product Failure',
   props<{ error: string }>()
 );
+
+export const loadCategoriesRequest = createAction('[Products] Load Categories Request');
+
+export const loadCategoriesSuccess = createAction(
+  '[Products] Load Categories Success',
+  props<{ categories: string[] }>()
+);
+
+export const loadCategoriesFailure = createAction(
+  '[Products] Load Categories Failure',
+  props<{ error: string }>()
+);

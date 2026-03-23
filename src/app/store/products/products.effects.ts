@@ -68,4 +68,18 @@ export class ProductsEffects {
       )
     )
   );
+
+  loadCategories$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ProductsActions.loadCategoriesRequest),
+      switchMap(() =>
+        this.api.get<string[]>('/api/products/categories').pipe(
+          map((categories) => ProductsActions.loadCategoriesSuccess({ categories })),
+          catchError((err) => [
+            ProductsActions.loadCategoriesFailure({ error: err?.error?.message || 'Failed to load categories.' }),
+          ])
+        )
+      )
+    )
+  );
 }

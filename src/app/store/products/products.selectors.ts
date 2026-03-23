@@ -8,3 +8,4 @@ export const selectProductsTotalCount = createSelector(selectProductsState, (s) 
 export const selectProductsLoading = createSelector(selectProductsState, (s) => s.isLoading);
 export const selectProductsError = createSelector(selectProductsState, (s) => s.error);
 export const selectFilters = createSelector(selectProductsState, (s) => s.filters);
+export const selectCategories = createSelector(selectProductsState, (s) => s.categories);
