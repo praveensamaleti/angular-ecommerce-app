@@ -149,11 +149,13 @@ export function matchVariant(
                 (click)="onAddToCart(product)"
                 [disabled]="effectiveStock(product) === 0 || variantRequired(product)"
               >
-                <ng-container [ngSwitch]="true">
-                  <ng-container *ngSwitchCase="effectiveStock(product) === 0">Out of Stock</ng-container>
-                  <ng-container *ngSwitchCase="variantRequired(product)">Select Options</ng-container>
-                  <ng-container *ngSwitchDefault>Add to Cart</ng-container>
-                </ng-container>
+                @if (effectiveStock(product) === 0) {
+                  Out of Stock
+                } @else if (variantRequired(product)) {
+                  Select Options
+                } @else {
+                  Add to Cart
+                }
               </button>
             </div>
 

@@ -315,8 +315,8 @@ export class VariantManagerComponent {
                     <td>
                       <button class="btn btn-outline-info btn-sm"
                               (click)="openVariantManager(product)">
-                        {{ (product.variants?.length ?? 0) > 0
-                            ? product.variants!.length + ' variants'
+                        {{ product.variants.length > 0
+                            ? product.variants.length + ' variants'
                             : '+ Variants' }}
                       </button>
                     </td>
@@ -395,7 +395,7 @@ export class VariantManagerComponent {
                     <td>{{ product.category }}</td>
                     <td class="text-end"><span [class]="stockClass(product.stock)">{{ product.stock }}</span></td>
                     <td class="text-end text-muted small">
-                      {{ (product.variants?.length ?? 0) > 0 ? product.variants!.length + ' variants' : '—' }}
+                      {{ product.variants.length > 0 ? product.variants.length + ' variants' : '—' }}
                     </td>
                   </tr>
                 </tbody>
